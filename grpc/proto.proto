@@ -1,12 +1,13 @@
 syntax = "proto3";
 option go_package = "Ricart-Argawala/grpc/proto";
 
-message Students {
-    repeated string students = 1;
+message GeneralServer {
+    string from = 1;
+    string to = 2;
+    string value = 3;
+    bool agree = 4;
 }
 
-message Empty {}
-
-service ITUDatabase {
-    rpc  {};
+service Node {
+    rpc GeneralCommunication (stream GeneralServer) returns (stream GeneralServer);
 }
