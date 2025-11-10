@@ -21,30 +21,28 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-type GeneralServer struct {
+type Request struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	From          string                 `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty"`
-	To            string                 `protobuf:"bytes,2,opt,name=to,proto3" json:"to,omitempty"`
-	Value         string                 `protobuf:"bytes,3,opt,name=value,proto3" json:"value,omitempty"`
-	Agree         bool                   `protobuf:"varint,4,opt,name=agree,proto3" json:"agree,omitempty"`
+	NodeId        int32                  `protobuf:"varint,1,opt,name=node_id,json=nodeId,proto3" json:"node_id,omitempty"` // The requesting Node's id
+	Lamport       int32                  `protobuf:"varint,2,opt,name=lamport,proto3" json:"lamport,omitempty"`             // The requesting Node's lamport timestamp
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *GeneralServer) Reset() {
-	*x = GeneralServer{}
+func (x *Request) Reset() {
+	*x = Request{}
 	mi := &file_proto_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *GeneralServer) String() string {
+func (x *Request) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*GeneralServer) ProtoMessage() {}
+func (*Request) ProtoMessage() {}
 
-func (x *GeneralServer) ProtoReflect() protoreflect.Message {
+func (x *Request) ProtoReflect() protoreflect.Message {
 	mi := &file_proto_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -56,51 +54,128 @@ func (x *GeneralServer) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use GeneralServer.ProtoReflect.Descriptor instead.
-func (*GeneralServer) Descriptor() ([]byte, []int) {
+// Deprecated: Use Request.ProtoReflect.Descriptor instead.
+func (*Request) Descriptor() ([]byte, []int) {
 	return file_proto_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *GeneralServer) GetFrom() string {
+func (x *Request) GetNodeId() int32 {
 	if x != nil {
-		return x.From
+		return x.NodeId
 	}
-	return ""
+	return 0
 }
 
-func (x *GeneralServer) GetTo() string {
+func (x *Request) GetLamport() int32 {
 	if x != nil {
-		return x.To
+		return x.Lamport
 	}
-	return ""
+	return 0
 }
 
-func (x *GeneralServer) GetValue() string {
-	if x != nil {
-		return x.Value
-	}
-	return ""
+type Response struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	NodeId        int32                  `protobuf:"varint,1,opt,name=node_id,json=nodeId,proto3" json:"node_id,omitempty"` // The responding Node's id
+	Lamport       int32                  `protobuf:"varint,2,opt,name=lamport,proto3" json:"lamport,omitempty"`             // The responding Node's lamport timestamp
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
-func (x *GeneralServer) GetAgree() bool {
+func (x *Response) Reset() {
+	*x = Response{}
+	mi := &file_proto_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Response) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Response) ProtoMessage() {}
+
+func (x *Response) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_proto_msgTypes[1]
 	if x != nil {
-		return x.Agree
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
 	}
-	return false
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Response.ProtoReflect.Descriptor instead.
+func (*Response) Descriptor() ([]byte, []int) {
+	return file_proto_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *Response) GetNodeId() int32 {
+	if x != nil {
+		return x.NodeId
+	}
+	return 0
+}
+
+func (x *Response) GetLamport() int32 {
+	if x != nil {
+		return x.Lamport
+	}
+	return 0
+}
+
+type Empty struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Empty) Reset() {
+	*x = Empty{}
+	mi := &file_proto_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Empty) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Empty) ProtoMessage() {}
+
+func (x *Empty) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Empty.ProtoReflect.Descriptor instead.
+func (*Empty) Descriptor() ([]byte, []int) {
+	return file_proto_proto_rawDescGZIP(), []int{2}
 }
 
 var File_proto_proto protoreflect.FileDescriptor
 
 const file_proto_proto_rawDesc = "" +
 	"\n" +
-	"\vproto.proto\"_\n" +
-	"\rGeneralServer\x12\x12\n" +
-	"\x04from\x18\x01 \x01(\tR\x04from\x12\x0e\n" +
-	"\x02to\x18\x02 \x01(\tR\x02to\x12\x14\n" +
-	"\x05value\x18\x03 \x01(\tR\x05value\x12\x14\n" +
-	"\x05agree\x18\x04 \x01(\bR\x05agree2B\n" +
-	"\x04Node\x12:\n" +
-	"\x14GeneralCommunication\x12\x0e.GeneralServer\x1a\x0e.GeneralServer(\x010\x01B\x1cZ\x1aRicart-Argawala/grpc/protob\x06proto3"
+	"\vproto.proto\"<\n" +
+	"\aRequest\x12\x17\n" +
+	"\anode_id\x18\x01 \x01(\x05R\x06nodeId\x12\x18\n" +
+	"\alamport\x18\x02 \x01(\x05R\alamport\"=\n" +
+	"\bResponse\x12\x17\n" +
+	"\anode_id\x18\x01 \x01(\x05R\x06nodeId\x12\x18\n" +
+	"\alamport\x18\x02 \x01(\x05R\alamport\"\a\n" +
+	"\x05Empty2Z\n" +
+	"\x0eRicartArgawala\x12*\n" +
+	"\x16RequestCriticalSection\x12\b.Request\x1a\x06.Empty\x12\x1c\n" +
+	"\aRespond\x12\t.Response\x1a\x06.EmptyB\x1dZ\x1bRicart-Argawala/proto/protob\x06proto3"
 
 var (
 	file_proto_proto_rawDescOnce sync.Once
@@ -114,15 +189,19 @@ func file_proto_proto_rawDescGZIP() []byte {
 	return file_proto_proto_rawDescData
 }
 
-var file_proto_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
+var file_proto_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
 var file_proto_proto_goTypes = []any{
-	(*GeneralServer)(nil), // 0: GeneralServer
+	(*Request)(nil),  // 0: Request
+	(*Response)(nil), // 1: Response
+	(*Empty)(nil),    // 2: Empty
 }
 var file_proto_proto_depIdxs = []int32{
-	0, // 0: Node.GeneralCommunication:input_type -> GeneralServer
-	0, // 1: Node.GeneralCommunication:output_type -> GeneralServer
-	1, // [1:2] is the sub-list for method output_type
-	0, // [0:1] is the sub-list for method input_type
+	0, // 0: RicartArgawala.RequestCriticalSection:input_type -> Request
+	1, // 1: RicartArgawala.Respond:input_type -> Response
+	2, // 2: RicartArgawala.RequestCriticalSection:output_type -> Empty
+	2, // 3: RicartArgawala.Respond:output_type -> Empty
+	2, // [2:4] is the sub-list for method output_type
+	0, // [0:2] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name
@@ -139,7 +218,7 @@ func file_proto_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_proto_rawDesc), len(file_proto_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   1,
+			NumMessages:   3,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

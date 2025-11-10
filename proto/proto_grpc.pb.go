@@ -19,97 +19,141 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Node_GeneralCommunication_FullMethodName = "/Node/GeneralCommunication"
+	RicartArgawala_RequestCriticalSection_FullMethodName = "/RicartArgawala/RequestCriticalSection"
+	RicartArgawala_Respond_FullMethodName                = "/RicartArgawala/Respond"
 )
 
-// NodeClient is the client API for Node service.
+// RicartArgawalaClient is the client API for RicartArgawala service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type NodeClient interface {
-	GeneralCommunication(ctx context.Context, opts ...grpc.CallOption) (grpc.BidiStreamingClient[GeneralServer, GeneralServer], error)
+type RicartArgawalaClient interface {
+	RequestCriticalSection(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Empty, error)
+	Respond(ctx context.Context, in *Response, opts ...grpc.CallOption) (*Empty, error)
 }
 
-type nodeClient struct {
+type ricartArgawalaClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewNodeClient(cc grpc.ClientConnInterface) NodeClient {
-	return &nodeClient{cc}
+func NewRicartArgawalaClient(cc grpc.ClientConnInterface) RicartArgawalaClient {
+	return &ricartArgawalaClient{cc}
 }
 
-func (c *nodeClient) GeneralCommunication(ctx context.Context, opts ...grpc.CallOption) (grpc.BidiStreamingClient[GeneralServer, GeneralServer], error) {
+func (c *ricartArgawalaClient) RequestCriticalSection(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	stream, err := c.cc.NewStream(ctx, &Node_ServiceDesc.Streams[0], Node_GeneralCommunication_FullMethodName, cOpts...)
+	out := new(Empty)
+	err := c.cc.Invoke(ctx, RicartArgawala_RequestCriticalSection_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &grpc.GenericClientStream[GeneralServer, GeneralServer]{ClientStream: stream}
-	return x, nil
+	return out, nil
 }
 
-// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type Node_GeneralCommunicationClient = grpc.BidiStreamingClient[GeneralServer, GeneralServer]
+func (c *ricartArgawalaClient) Respond(ctx context.Context, in *Response, opts ...grpc.CallOption) (*Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Empty)
+	err := c.cc.Invoke(ctx, RicartArgawala_Respond_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
 
-// NodeServer is the server API for Node service.
-// All implementations must embed UnimplementedNodeServer
+// RicartArgawalaServer is the server API for RicartArgawala service.
+// All implementations must embed UnimplementedRicartArgawalaServer
 // for forward compatibility.
-type NodeServer interface {
-	GeneralCommunication(grpc.BidiStreamingServer[GeneralServer, GeneralServer]) error
-	mustEmbedUnimplementedNodeServer()
+type RicartArgawalaServer interface {
+	RequestCriticalSection(context.Context, *Request) (*Empty, error)
+	Respond(context.Context, *Response) (*Empty, error)
+	mustEmbedUnimplementedRicartArgawalaServer()
 }
 
-// UnimplementedNodeServer must be embedded to have
+// UnimplementedRicartArgawalaServer must be embedded to have
 // forward compatible implementations.
 //
 // NOTE: this should be embedded by value instead of pointer to avoid a nil
 // pointer dereference when methods are called.
-type UnimplementedNodeServer struct{}
+type UnimplementedRicartArgawalaServer struct{}
 
-func (UnimplementedNodeServer) GeneralCommunication(grpc.BidiStreamingServer[GeneralServer, GeneralServer]) error {
-	return status.Errorf(codes.Unimplemented, "method GeneralCommunication not implemented")
+func (UnimplementedRicartArgawalaServer) RequestCriticalSection(context.Context, *Request) (*Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RequestCriticalSection not implemented")
 }
-func (UnimplementedNodeServer) mustEmbedUnimplementedNodeServer() {}
-func (UnimplementedNodeServer) testEmbeddedByValue()              {}
+func (UnimplementedRicartArgawalaServer) Respond(context.Context, *Response) (*Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Respond not implemented")
+}
+func (UnimplementedRicartArgawalaServer) mustEmbedUnimplementedRicartArgawalaServer() {}
+func (UnimplementedRicartArgawalaServer) testEmbeddedByValue()                        {}
 
-// UnsafeNodeServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to NodeServer will
+// UnsafeRicartArgawalaServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to RicartArgawalaServer will
 // result in compilation errors.
-type UnsafeNodeServer interface {
-	mustEmbedUnimplementedNodeServer()
+type UnsafeRicartArgawalaServer interface {
+	mustEmbedUnimplementedRicartArgawalaServer()
 }
 
-func RegisterNodeServer(s grpc.ServiceRegistrar, srv NodeServer) {
-	// If the following call pancis, it indicates UnimplementedNodeServer was
+func RegisterRicartArgawalaServer(s grpc.ServiceRegistrar, srv RicartArgawalaServer) {
+	// If the following call pancis, it indicates UnimplementedRicartArgawalaServer was
 	// embedded by pointer and is nil.  This will cause panics if an
 	// unimplemented method is ever invoked, so we test this at initialization
 	// time to prevent it from happening at runtime later due to I/O.
 	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
 		t.testEmbeddedByValue()
 	}
-	s.RegisterService(&Node_ServiceDesc, srv)
+	s.RegisterService(&RicartArgawala_ServiceDesc, srv)
 }
 
-func _Node_GeneralCommunication_Handler(srv interface{}, stream grpc.ServerStream) error {
-	return srv.(NodeServer).GeneralCommunication(&grpc.GenericServerStream[GeneralServer, GeneralServer]{ServerStream: stream})
+func _RicartArgawala_RequestCriticalSection_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Request)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RicartArgawalaServer).RequestCriticalSection(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RicartArgawala_RequestCriticalSection_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RicartArgawalaServer).RequestCriticalSection(ctx, req.(*Request))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
-// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type Node_GeneralCommunicationServer = grpc.BidiStreamingServer[GeneralServer, GeneralServer]
+func _RicartArgawala_Respond_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Response)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RicartArgawalaServer).Respond(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RicartArgawala_Respond_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RicartArgawalaServer).Respond(ctx, req.(*Response))
+	}
+	return interceptor(ctx, in, info, handler)
+}
 
-// Node_ServiceDesc is the grpc.ServiceDesc for Node service.
+// RicartArgawala_ServiceDesc is the grpc.ServiceDesc for RicartArgawala service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var Node_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "Node",
-	HandlerType: (*NodeServer)(nil),
-	Methods:     []grpc.MethodDesc{},
-	Streams: []grpc.StreamDesc{
+var RicartArgawala_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "RicartArgawala",
+	HandlerType: (*RicartArgawalaServer)(nil),
+	Methods: []grpc.MethodDesc{
 		{
-			StreamName:    "GeneralCommunication",
-			Handler:       _Node_GeneralCommunication_Handler,
-			ServerStreams: true,
-			ClientStreams: true,
+			MethodName: "RequestCriticalSection",
+			Handler:    _RicartArgawala_RequestCriticalSection_Handler,
+		},
+		{
+			MethodName: "Respond",
+			Handler:    _RicartArgawala_Respond_Handler,
 		},
 	},
+	Streams:  []grpc.StreamDesc{},
 	Metadata: "proto.proto",
 }

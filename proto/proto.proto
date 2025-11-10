@@ -1,13 +1,20 @@
 syntax = "proto3";
-option go_package = "Ricart-Argawala/grpc/proto";
 
-message GeneralServer {
-    string from = 1;
-    string to = 2;
-    string value = 3;
-    bool agree = 4;
+option go_package = "Ricart-Argawala/proto/proto";
+
+message Request {
+    int32 node_id = 1; // The requesting Node's id
+    int32 lamport = 2; // The requesting Node's lamport timestamp
 }
 
-service Node {
-    rpc GeneralCommunication (stream GeneralServer) returns (stream GeneralServer);
+message Response {
+    int32 node_id = 1; // The responding Node's id
+    int32 lamport = 2; // The responding Node's lamport timestamp
+}
+
+message Empty {}
+
+service RicartArgawala {
+    rpc RequestCriticalSection(Request) returns (Empty);
+    rpc Respond(Response) returns (Empty);
 }
