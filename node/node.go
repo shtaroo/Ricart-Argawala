@@ -103,7 +103,7 @@ func (node *Node) DoesEverythinginator() {
 	node.numReplies = 0
 	for peer_id := range node.deferredReplies {
 		println(peer_id)
-		node.SendReply(int32(peer_id))
+		node.SendReply(int32(peer_id + 1))
 		log.Printf("Node #%d replied to Node #%d", node.id, peer_id)
 	}
 	node.deferredReplies = []int32{}
