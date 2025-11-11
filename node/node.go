@@ -63,7 +63,7 @@ func (node *Node) SendRequestsToPeers() {
 			defer conn.Close()
 
 			peer_node := pb.NewRicartArgawalaClient(conn)
-			_, _ = peer_node.RequestCS(context.Background(), &pb.Request{
+			peer_node.RequestCriticalSection(context.Background(), &pb.Request{
 				NodeId:  node.id,
 				Lamport: node.lamport,
 			})
@@ -71,12 +71,38 @@ func (node *Node) SendRequestsToPeers() {
 	}
 
 	// Wait for len(peers) replies
+	//TODO: STILL WIP
+}
+
+func (node *Node) RequestCriticalSection(ctx context.Context, in *pb.Request) (*pb.Empty, error) {
+	node.mu.Lock()
+	defer node.mu.Unlock()
+
+	node.lamport = max(node.lamport, in.Lamport) + 1
+
+	if (node.state == "HELD") || (node.state == "WANTED" && node.IsLessThanPeer(in.Lamport, in.NodeId)) {
+		//queue req
+	} else {
+		//reply to req
+	}
+
+	return &pb.Empty{}, nil
 }
 
 func (node *Node) IncrementNumberOfReplies() {
 	node.mu.Lock()
 	node.numReplies++
 	node.mu.Unlock()
+}
+
+func (node *Node) IsLessThanPeer(peerLamport int32, peerId int32) bool {
+	if node.lamport < peerLamport {
+		return true
+	} else if node.lamport == peerLamport {
+		return node.id < peerId
+	} else {
+		return false
+	}
 }
 
 func main() {
