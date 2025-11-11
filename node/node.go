@@ -24,8 +24,9 @@ type Node struct {
 	lamport int32
 	peers   []string
 
-	mu         sync.Mutex
-	numReplies int
+	mu              sync.Mutex
+	numReplies      int
+	deferredReplies []int32
 }
 
 func (node *Node) StartServer(port string) {
@@ -48,10 +49,11 @@ func (node *Node) StartServer(port string) {
 	}
 }
 
-func (node *Node) SendRequestsToPeers() {
+func (node *Node) DoesEverythinginator() {
 	node.state = "WANTED"
 	node.lamport++ // Lamport increase on state-change
 
+	// Send requests to peers
 	for _, peer := range node.peers {
 		go func() {
 			// Connect to peer
@@ -71,8 +73,34 @@ func (node *Node) SendRequestsToPeers() {
 		}()
 	}
 
-	// Wait for len(peers) replies
-	//TODO: STILL WIP
+	// Wait for replies from all peers
+	for {
+		node.mu.Lock()
+		if node.numReplies >= len(node.peers) {
+			break
+		}
+		node.mu.Unlock()
+
+		time.Sleep(100 * time.Millisecond) // Cap the loop to run 10 times per sec instead of thousands
+	}
+
+	// Enter critical section
+	log.Printf("🚨💀 Node %d entered the critical section 💀🚨", node.id)
+
+	// Pretend something cool is happening in the critical section...
+	time.Sleep(3 * time.Second)
+
+	// Leave critical section
+	log.Printf("🚶💨 Node %d left the critical section 🚶💨", node.id)
+
+	// Reply to all in queue
+	node.mu.Lock()
+	node.state = "RELEASED"
+	for id := range node.deferredReplies {
+		go node.SendReply(int32(id))
+	}
+	node.deferredReplies = []int32{}
+	node.mu.Unlock()
 }
 
 func (node *Node) RequestCriticalSection(ctx context.Context, in *pb.Request) (*pb.Empty, error) {
@@ -84,8 +112,10 @@ func (node *Node) RequestCriticalSection(ctx context.Context, in *pb.Request) (*
 
 	// 'On receive' part from lecture 7 slide 15/52
 	if (node.state == "HELD") || (node.state == "WANTED" && node.IsLessThanPeer(in.Lamport, in.NodeId)) {
-		//queue req WIP
+		// Queue reply
+		node.deferredReplies = append(node.deferredReplies, in.NodeId)
 	} else {
+		// Direct reply
 		go node.SendReply(in.NodeId)
 	}
 
@@ -160,9 +190,7 @@ func main() {
 
 	// Continuously attempt to enter critical section
 	for {
-		node.SendRequestsToPeers()
-		//node.waitForReplies()
-		//node.enterCriticalSection()
+		node.DoesEverythinginator()
 
 		time.Sleep(5 * time.Second)
 	}
