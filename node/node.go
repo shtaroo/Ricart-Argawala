@@ -50,10 +50,10 @@ func (node *Node) StartServer(port string) {
 }
 
 func (node *Node) DoesEverythinginator() {
-	node.state = "WANTED"
-	node.lamport++ // Lamport increase on state-change
+	node.state = "WANTED" // Lecture 7 slide 15/50 'On enter do'
+	//node.lamport++      // Lamport increase on state-change
 
-	// Send requests to peers
+	// Send requests to peers. Lecture 7 slide 15/50 'multicast ‘req(T,p)’'
 	for _, peer := range node.peers {
 		go func() {
 			// Connect to peer
@@ -72,32 +72,39 @@ func (node *Node) DoesEverythinginator() {
 			})
 		}()
 	}
+	log.Printf("Node #%d sent requests to its peers", node.id)
 
-	// Wait for replies from all peers
+	// Lecture 7 slide 15/50 'wait for N-1 replies'
 	for {
 		node.mu.Lock()
 		if node.numReplies >= len(node.peers) {
 			break
 		}
 		node.mu.Unlock()
-
 		time.Sleep(100 * time.Millisecond) // Cap the loop to run 10 times per sec instead of thousands
 	}
+	node.mu.Unlock()
+	log.Printf("Node #%d received answers from all its peers", node.id)
+
+	node.state = "HELD" // Lecture 7 slide 15/50 'state := HELD'
 
 	// Enter critical section
-	log.Printf("🚨💀 Node %d entered the critical section 💀🚨", node.id)
+	log.Printf("🚨💀 Node #%d entered the critical section 💀🚨", node.id)
 
 	// Pretend something cool is happening in the critical section...
 	time.Sleep(3 * time.Second)
 
 	// Leave critical section
-	log.Printf("🚶💨 Node %d left the critical section 🚶💨", node.id)
+	log.Printf("🚶💨 Node #%d left the critical section 🚶💨", node.id)
 
-	// Reply to all in queue
+	// Reply to all in queue. Lecture 7 slide 15/50 'On exit do'
 	node.mu.Lock()
 	node.state = "RELEASED"
-	for id := range node.deferredReplies {
-		go node.SendReply(int32(id))
+	node.numReplies = 0
+	for peer_id := range node.deferredReplies {
+		println(peer_id)
+		node.SendReply(int32(peer_id))
+		log.Printf("Node #%d replied to Node #%d", node.id, peer_id)
 	}
 	node.deferredReplies = []int32{}
 	node.mu.Unlock()
@@ -109,14 +116,18 @@ func (node *Node) RequestCriticalSection(ctx context.Context, in *pb.Request) (*
 
 	// Correct lamport timestamp
 	node.lamport = max(node.lamport, in.Lamport) + 1
+	log.Printf("Node #%d corrected its Lamport timestamp to %d", node.id, node.lamport)
 
-	// 'On receive' part from lecture 7 slide 15/52
+	// 'On receive' part from lecture 7 slide 15/50
 	if (node.state == "HELD") || (node.state == "WANTED" && node.IsLessThanPeer(in.Lamport, in.NodeId)) {
 		// Queue reply
 		node.deferredReplies = append(node.deferredReplies, in.NodeId)
+		//log.Printf("Node #%d appended deferredReplies with value %d", node.id, in.NodeId, in.NodeId)
+		log.Printf("Node #%d deferred replying to %d", node.id, in.NodeId)
 	} else {
 		// Direct reply
 		go node.SendReply(in.NodeId)
+		log.Printf("Node #%d replied directly to %d", node.id, in.NodeId)
 	}
 
 	return &pb.Empty{}, nil
@@ -129,7 +140,9 @@ func (node *Node) SendReply(peer_id int32) {
 	}
 
 	// Connect to peer
+	println("TEST")
 	peer := node.peers[peer_id-1]
+	println("TEST2")
 	conn, err := grpc.NewClient(peer, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Printf("Failed to connect to %s: %v", peer, err)
@@ -177,16 +190,16 @@ func main() {
 	// Create new Node
 	node := &Node{
 		id:      node_id32,
-		state:   "RELEASED",
+		state:   "RELEASED", // Lecture 7 slide 15/50 'On initialisation do'
 		lamport: 0,
 		peers:   peers,
 	}
 
 	// Start node-server (start listening for requests)
-	node.StartServer(port)
+	go node.StartServer(port)
 
-	// Wait 20 seconds so there is time to start all Nodes
-	time.Sleep(20 * time.Second)
+	// Wait 10 seconds so there is time to start all Nodes
+	time.Sleep(10 * time.Second)
 
 	// Continuously attempt to enter critical section
 	for {
