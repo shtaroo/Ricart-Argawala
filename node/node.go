@@ -1,13 +1,16 @@
 package main
 
 import (
-	log "log"
-	net "net"
-	os "os"
-	strconv "strconv"
-	time "time"
+	"context"
+	"log"
+	"net"
+	"os"
+	"strconv"
+	"sync"
+	"time"
 
-	grpc "google.golang.org/grpc"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 
 	pb "module/proto"
 )
@@ -16,10 +19,13 @@ import (
 type Node struct {
 	pb.UnimplementedRicartArgawalaServer
 
-	id      int
+	id      int32
 	state   string
-	lamport int
+	lamport int32
 	peers   []string
+
+	mu         sync.Mutex
+	numReplies int
 }
 
 func (node *Node) StartServer(port string) {
@@ -42,6 +48,37 @@ func (node *Node) StartServer(port string) {
 	}
 }
 
+func (node *Node) SendRequestsToPeers() {
+	node.state = "WANTED"
+	node.lamport++ // Lamport increase on state-change
+
+	for _, peer := range node.peers {
+		// Send request message
+		go func() {
+			conn, err := grpc.NewClient(peer, grpc.WithTransportCredentials(insecure.NewCredentials()))
+			if err != nil {
+				log.Printf("Failed to connect to %s: %v", peer, err)
+				return
+			}
+			defer conn.Close()
+
+			peer_node := pb.NewRicartArgawalaClient(conn)
+			_, _ = peer_node.RequestCS(context.Background(), &pb.Request{
+				NodeId:  node.id,
+				Lamport: node.lamport,
+			})
+		}()
+	}
+
+	// Wait for len(peers) replies
+}
+
+func (node *Node) IncrementNumberOfReplies() {
+	node.mu.Lock()
+	node.numReplies++
+	node.mu.Unlock()
+}
+
 func main() {
 	if len(os.Args) < 4 {
 		// Even though we're really looking for 3 arguments, we expect 4 or more because
@@ -52,12 +89,13 @@ func main() {
 
 	// Parse args to create a new Node and server
 	node_id, _ := strconv.Atoi(os.Args[1])
+	node_id32 := int32(node_id)
 	port := os.Args[2]
 	peers := os.Args[3:]
 
 	// Create new Node
 	node := &Node{
-		id:      node_id,
+		id:      node_id32,
 		state:   "RELEASED",
 		lamport: 0,
 		peers:   peers,
@@ -70,5 +108,11 @@ func main() {
 	time.Sleep(20 * time.Second)
 
 	// Continuously attempt to enter critical section
-	// code goes here ...
+	for {
+		node.SendRequestsToPeers()
+		//node.waitForReplies()
+		//node.enterCriticalSection()
+
+		time.Sleep(5 * time.Second)
+	}
 }
