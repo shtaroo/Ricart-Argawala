@@ -112,13 +112,6 @@ func (node *Node) SendReply(peer_id int32) {
 	peer_node.RespondToCSRequest(context.Background(), &pb.Response{NodeId: node.id, Lamport: node.lamport})
 }
 
-// MIGHT BE UNNECESSARY. DELETE IF SO
-func (node *Node) IncrementNumberOfReplies() {
-	node.mu.Lock()
-	node.numReplies++
-	node.mu.Unlock()
-}
-
 func (node *Node) IsLessThanPeer(peerLamport int32, peerId int32) bool {
 	if node.lamport < peerLamport {
 		return true
@@ -127,6 +120,14 @@ func (node *Node) IsLessThanPeer(peerLamport int32, peerId int32) bool {
 	} else {
 		return false
 	}
+}
+
+func (node *Node) RespondToCSRequest(ctx context.Context, in *pb.Response) (*pb.Empty, error) {
+	node.mu.Lock()
+	defer node.mu.Unlock()
+
+	node.numReplies++ // Increment number of replies received
+	return &pb.Empty{}, nil
 }
 
 func main() {
