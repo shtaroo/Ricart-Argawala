@@ -53,8 +53,8 @@ func (node *Node) SendRequestsToPeers() {
 	node.lamport++ // Lamport increase on state-change
 
 	for _, peer := range node.peers {
-		// Send request message
 		go func() {
+			// Connect to peer
 			conn, err := grpc.NewClient(peer, grpc.WithTransportCredentials(insecure.NewCredentials()))
 			if err != nil {
 				log.Printf("Failed to connect to %s: %v", peer, err)
@@ -62,6 +62,7 @@ func (node *Node) SendRequestsToPeers() {
 			}
 			defer conn.Close()
 
+			// Send request message to peer
 			peer_node := pb.NewRicartArgawalaClient(conn)
 			peer_node.RequestCriticalSection(context.Background(), &pb.Request{
 				NodeId:  node.id,
@@ -78,17 +79,40 @@ func (node *Node) RequestCriticalSection(ctx context.Context, in *pb.Request) (*
 	node.mu.Lock()
 	defer node.mu.Unlock()
 
+	// Correct lamport timestamp
 	node.lamport = max(node.lamport, in.Lamport) + 1
 
+	// 'On receive' part from lecture 7 slide 15/52
 	if (node.state == "HELD") || (node.state == "WANTED" && node.IsLessThanPeer(in.Lamport, in.NodeId)) {
-		//queue req
+		//queue req WIP
 	} else {
-		//reply to req
+		go node.SendReply(in.NodeId)
 	}
 
 	return &pb.Empty{}, nil
 }
 
+func (node *Node) SendReply(peer_id int32) {
+	// ChatGPT black magic
+	if int(peer_id) >= len(node.peers)+1 || peer_id == node.id {
+		return
+	}
+
+	// Connect to peer
+	peer := node.peers[peer_id-1]
+	conn, err := grpc.NewClient(peer, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		log.Printf("Failed to connect to %s: %v", peer, err)
+		return
+	}
+	defer conn.Close()
+
+	// Respond to peer
+	peer_node := pb.NewRicartArgawalaClient(conn)
+	peer_node.RespondToCSRequest(context.Background(), &pb.Response{NodeId: node.id, Lamport: node.lamport})
+}
+
+// MIGHT BE UNNECESSARY. DELETE IF SO
 func (node *Node) IncrementNumberOfReplies() {
 	node.mu.Lock()
 	node.numReplies++

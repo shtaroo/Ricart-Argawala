@@ -20,7 +20,7 @@ const _ = grpc.SupportPackageIsVersion9
 
 const (
 	RicartArgawala_RequestCriticalSection_FullMethodName = "/RicartArgawala/RequestCriticalSection"
-	RicartArgawala_Respond_FullMethodName                = "/RicartArgawala/Respond"
+	RicartArgawala_RespondToCSRequest_FullMethodName     = "/RicartArgawala/RespondToCSRequest"
 )
 
 // RicartArgawalaClient is the client API for RicartArgawala service.
@@ -28,7 +28,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type RicartArgawalaClient interface {
 	RequestCriticalSection(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Empty, error)
-	Respond(ctx context.Context, in *Response, opts ...grpc.CallOption) (*Empty, error)
+	RespondToCSRequest(ctx context.Context, in *Response, opts ...grpc.CallOption) (*Empty, error)
 }
 
 type ricartArgawalaClient struct {
@@ -49,10 +49,10 @@ func (c *ricartArgawalaClient) RequestCriticalSection(ctx context.Context, in *R
 	return out, nil
 }
 
-func (c *ricartArgawalaClient) Respond(ctx context.Context, in *Response, opts ...grpc.CallOption) (*Empty, error) {
+func (c *ricartArgawalaClient) RespondToCSRequest(ctx context.Context, in *Response, opts ...grpc.CallOption) (*Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(Empty)
-	err := c.cc.Invoke(ctx, RicartArgawala_Respond_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, RicartArgawala_RespondToCSRequest_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -64,7 +64,7 @@ func (c *ricartArgawalaClient) Respond(ctx context.Context, in *Response, opts .
 // for forward compatibility.
 type RicartArgawalaServer interface {
 	RequestCriticalSection(context.Context, *Request) (*Empty, error)
-	Respond(context.Context, *Response) (*Empty, error)
+	RespondToCSRequest(context.Context, *Response) (*Empty, error)
 	mustEmbedUnimplementedRicartArgawalaServer()
 }
 
@@ -78,8 +78,8 @@ type UnimplementedRicartArgawalaServer struct{}
 func (UnimplementedRicartArgawalaServer) RequestCriticalSection(context.Context, *Request) (*Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RequestCriticalSection not implemented")
 }
-func (UnimplementedRicartArgawalaServer) Respond(context.Context, *Response) (*Empty, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Respond not implemented")
+func (UnimplementedRicartArgawalaServer) RespondToCSRequest(context.Context, *Response) (*Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RespondToCSRequest not implemented")
 }
 func (UnimplementedRicartArgawalaServer) mustEmbedUnimplementedRicartArgawalaServer() {}
 func (UnimplementedRicartArgawalaServer) testEmbeddedByValue()                        {}
@@ -120,20 +120,20 @@ func _RicartArgawala_RequestCriticalSection_Handler(srv interface{}, ctx context
 	return interceptor(ctx, in, info, handler)
 }
 
-func _RicartArgawala_Respond_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _RicartArgawala_RespondToCSRequest_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(Response)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(RicartArgawalaServer).Respond(ctx, in)
+		return srv.(RicartArgawalaServer).RespondToCSRequest(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: RicartArgawala_Respond_FullMethodName,
+		FullMethod: RicartArgawala_RespondToCSRequest_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RicartArgawalaServer).Respond(ctx, req.(*Response))
+		return srv.(RicartArgawalaServer).RespondToCSRequest(ctx, req.(*Response))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -150,8 +150,8 @@ var RicartArgawala_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _RicartArgawala_RequestCriticalSection_Handler,
 		},
 		{
-			MethodName: "Respond",
-			Handler:    _RicartArgawala_Respond_Handler,
+			MethodName: "RespondToCSRequest",
+			Handler:    _RicartArgawala_RespondToCSRequest_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -16,5 +16,5 @@ message Empty {}
 
 service RicartArgawala {
     rpc RequestCriticalSection(Request) returns (Empty);
-    rpc Respond(Response) returns (Empty);
+    rpc RespondToCSRequest(Response) returns (Empty);
 }

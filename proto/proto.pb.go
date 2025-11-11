@@ -172,10 +172,10 @@ const file_proto_proto_rawDesc = "" +
 	"\bResponse\x12\x17\n" +
 	"\anode_id\x18\x01 \x01(\x05R\x06nodeId\x12\x18\n" +
 	"\alamport\x18\x02 \x01(\x05R\alamport\"\a\n" +
-	"\x05Empty2Z\n" +
+	"\x05Empty2e\n" +
 	"\x0eRicartArgawala\x12*\n" +
-	"\x16RequestCriticalSection\x12\b.Request\x1a\x06.Empty\x12\x1c\n" +
-	"\aRespond\x12\t.Response\x1a\x06.EmptyB\x1dZ\x1bRicart-Argawala/proto/protob\x06proto3"
+	"\x16RequestCriticalSection\x12\b.Request\x1a\x06.Empty\x12'\n" +
+	"\x12RespondToCSRequest\x12\t.Response\x1a\x06.EmptyB\x1dZ\x1bRicart-Argawala/proto/protob\x06proto3"
 
 var (
 	file_proto_proto_rawDescOnce sync.Once
@@ -197,9 +197,9 @@ var file_proto_proto_goTypes = []any{
 }
 var file_proto_proto_depIdxs = []int32{
 	0, // 0: RicartArgawala.RequestCriticalSection:input_type -> Request
-	1, // 1: RicartArgawala.Respond:input_type -> Response
+	1, // 1: RicartArgawala.RespondToCSRequest:input_type -> Response
 	2, // 2: RicartArgawala.RequestCriticalSection:output_type -> Empty
-	2, // 3: RicartArgawala.Respond:output_type -> Empty
+	2, // 3: RicartArgawala.RespondToCSRequest:output_type -> Empty
 	2, // [2:4] is the sub-list for method output_type
 	0, // [0:2] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
