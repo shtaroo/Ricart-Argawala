@@ -51,7 +51,6 @@ func (node *Node) StartServer(port string) {
 
 func (node *Node) DoesEverythinginator() {
 	node.state = "WANTED" // Lecture 7 slide 15/50 'On enter do'
-	//node.lamport++      // Lamport increase on state-change
 
 	// Send requests to peers. Lecture 7 slide 15/50 'multicast ‘req(T,p)’'
 	for _, peer := range node.peers {
@@ -84,7 +83,6 @@ func (node *Node) DoesEverythinginator() {
 		time.Sleep(100 * time.Millisecond) // Cap the loop to run 10 times per sec instead of thousands
 	}
 	node.mu.Unlock()
-	log.Printf("Node #%d received answers from all its peers", node.id)
 
 	node.state = "HELD" // Lecture 7 slide 15/50 'state := HELD'
 
@@ -99,14 +97,14 @@ func (node *Node) DoesEverythinginator() {
 
 	// Reply to all in queue. Lecture 7 slide 15/50 'On exit do'
 	node.mu.Lock()
-	node.state = "RELEASED"
-	node.numReplies = 0
+	node.state = "RELEASED" // Reset state
+	node.numReplies = 0     // Reset number of received replies
 	for peer_id := range node.deferredReplies {
 		println(peer_id)
 		node.SendReply(int32(peer_id + 1))
 		log.Printf("Node #%d replied to Node #%d", node.id, peer_id)
 	}
-	node.deferredReplies = []int32{}
+	node.deferredReplies = []int32{} // Reset deferred replies slice
 	node.mu.Unlock()
 }
 
@@ -122,7 +120,6 @@ func (node *Node) RequestCriticalSection(ctx context.Context, in *pb.Request) (*
 	if (node.state == "HELD") || (node.state == "WANTED" && node.IsLessThanPeer(in.Lamport, in.NodeId)) {
 		// Queue reply
 		node.deferredReplies = append(node.deferredReplies, in.NodeId)
-		//log.Printf("Node #%d appended deferredReplies with value %d", node.id, in.NodeId, in.NodeId)
 		log.Printf("Node #%d deferred replying to %d", node.id, in.NodeId)
 	} else {
 		// Direct reply
@@ -140,9 +137,7 @@ func (node *Node) SendReply(peer_id int32) {
 	}
 
 	// Connect to peer
-	println("TEST")
 	peer := node.peers[peer_id-1]
-	println("TEST2")
 	conn, err := grpc.NewClient(peer, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Printf("Failed to connect to %s: %v", peer, err)
