@@ -1,6 +1,12 @@
 # BSDISYS1KU Group pickle || Mandatory activity 3: ChitChat
 ## How to run the program
----
+1. In three separate terminals, navigate to the root-directory, and then the node folder.
+2. In the terminals run following commands, one command per terminal:
+    go run node.go 1 :5001 localhost:5002 localhost:5003
+    go run node.go 2 :5002 localhost:5001 localhost:5003
+    go run node.go 3 :5003 localhost:5001 localhost:5002
+3. If prompted, allow public networks to acces "node.exe".
+4. Observe that the system (almost) works. Sadly, we have an error where Node #1 doesn't succesfully reply to Node #2 and #3 after leaving the Critical Section and so only Node #1 is ever allowed access to the CS.
 
 ## Description
 You are required to implement distributed mutual exclusion among nodes
