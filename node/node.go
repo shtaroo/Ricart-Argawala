@@ -2,9 +2,12 @@ package main
 
 import (
 	"context"
+	"fmt"
+	"io"
 	"log"
 	"net"
 	"os"
+	"path/filepath"
 	"strconv"
 	"sync"
 	"time"
@@ -169,6 +172,10 @@ func (node *Node) RespondToCSRequest(ctx context.Context, in *pb.Response) (*pb.
 }
 
 func main() {
+	//logging setup
+	logFile := setupLogging()
+	defer logFile.Close()
+
 	if len(os.Args) < 4 {
 		// Even though we're really looking for 3 arguments, we expect 4 or more because
 		// the first (0th) argument always directs to the .exe of the .go file that's run...
@@ -202,4 +209,30 @@ func main() {
 
 		time.Sleep(5 * time.Second)
 	}
+}
+
+func setupLogging() *os.File {
+	//create logging magic
+	logDir := filepath.Join(".", "logs")
+
+	if err := os.MkdirAll(logDir, os.ModePerm); err != nil {
+		log.Fatalf("failed to create log directory: %v", err)
+	}
+
+	//create log file
+	timestamp := time.Now().Format("20060102-150405")
+	fileName := filepath.Join(logDir, fmt.Sprintf("log-%s.txt", timestamp))
+
+	//open file for append or create
+	logFile, err := os.OpenFile(fileName, os.O_CREATE|os.O_APPEND|os.O_RDWR, 0644)
+	if err != nil {
+		log.Fatalf("failed to open log file: %v", err)
+	}
+
+	//log both to console and file
+	mw := io.MultiWriter(os.Stdout, logFile)
+	log.SetOutput(mw)
+	log.SetFlags(log.LstdFlags | log.Lmicroseconds)
+
+	return logFile
 }
