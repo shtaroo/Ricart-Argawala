@@ -1,0 +1,17 @@
+2025/11/12 16:35:59.596165 Node #1 now listening on localhost:5001
+2025/11/12 16:36:06.541154 Node #1 corrected its Lamport timestamp to 1
+2025/11/12 16:36:06.541154 Node #1 replied directly to 3
+2025/11/12 16:36:09.596281 Node #1 sent requests to its peers
+2025/11/12 16:36:09.697190 🚨💀 Node #1 entered the critical section 💀🚨
+2025/11/12 16:36:12.698023 🚶💨 Node #1 left the critical section 🚶💨
+2025/11/12 16:36:13.180807 Node #1 corrected its Lamport timestamp to 3
+2025/11/12 16:36:13.181359 Node #1 replied directly to 2
+2025/11/12 16:36:17.698759 Node #1 sent requests to its peers
+2025/11/12 16:36:17.799994 🚨💀 Node #1 entered the critical section 💀🚨
+2025/11/12 16:36:20.800791 🚶💨 Node #1 left the critical section 🚶💨
+2025/11/12 16:36:25.801534 Node #1 sent requests to its peers
+2025/11/12 16:36:25.901869 🚨💀 Node #1 entered the critical section 💀🚨
+2025/11/12 16:36:28.902930 🚶💨 Node #1 left the critical section 🚶💨
+2025/11/12 16:36:33.904335 Node #1 sent requests to its peers
+2025/11/12 16:36:34.005347 🚨💀 Node #1 entered the critical section 💀🚨
+2025/11/12 16:36:37.006506 🚶💨 Node #1 left the critical section 🚶💨

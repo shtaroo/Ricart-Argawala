@@ -1,0 +1,12 @@
+2025/11/12 16:36:03.175223 Node #2 now listening on localhost:5002
+2025/11/12 16:36:06.541154 Node #2 corrected its Lamport timestamp to 1
+2025/11/12 16:36:06.541154 Node #2 replied directly to 3
+2025/11/12 16:36:09.605308 Node #2 corrected its Lamport timestamp to 2
+2025/11/12 16:36:09.605308 Node #2 replied directly to 1
+2025/11/12 16:36:13.175615 Node #2 sent requests to its peers
+2025/11/12 16:36:17.702620 Node #2 corrected its Lamport timestamp to 4
+2025/11/12 16:36:17.703141 Node #2 replied directly to 1
+2025/11/12 16:36:25.806800 Node #2 corrected its Lamport timestamp to 5
+2025/11/12 16:36:25.806800 Node #2 replied directly to 1
+2025/11/12 16:36:33.910227 Node #2 corrected its Lamport timestamp to 6
+2025/11/12 16:36:33.910227 Node #2 replied directly to 1
